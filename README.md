@@ -85,7 +85,7 @@ The strategic roadmap for the RFP Agent is centered on enhancing its strategic a
 
 This project is engineered as a secure, enterprise-grade, and highly observable AI system. The architecture prioritizes seamless knowledge retrieval, robust quality assurance, and scalability.
 
-*   **Google Cloud Native:** Powered by Google Cloud's Vertex AI, BigQuery, and Cortex Framework to ensure powerful, scalable, and instant data retrieval from your enterprise knowledge.
+*   **Google Cloud Native:** Powered by Google Cloud's Vertex AI and Gemini models to ensure powerful, scalable, and instant data retrieval from your enterprise knowledge.
 *   **Rigorous AI Evaluation Framework:** The agent’s performance is continuously validated using Rubric-Based Metrics, where a "Judge" LLM (Gemini) systematically evaluates the quality and accuracy of its outputs.
 *   **Comprehensive Quality Metrics:** The agent is evaluated on a 0.0 to 1.0 scale across four key dimensions:
     *   *Final Response Quality:* Ensures the generated proposal text is correct, relevant, and properly formatted.
