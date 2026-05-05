@@ -40,6 +40,7 @@
       * [Prerequisites](#prerequisites)
       * [Part 1: Add the Agent via the Google Cloud Console (For Admins)](#part-1-add-the-agent-via-the-google-cloud-console-for-admins)
       * [Part 2: Share the Agent with Your Organization (For Admins)](#part-2-share-the-agent-with-your-organization-for-admins)
+  * [Bill of Materials](#bill-of-materials)
 <!-- TOC -->
 
 ## Project Overview
@@ -141,3 +142,43 @@ Click **Add user**. In the dialog box, you can grant access to specific individu
 
 **Step 3: Save Permissions**
 Assign the appropriate role and click **Save**. The agent is now authorized and live for your selected users
+
+---
+
+## Bill of Materials
+# Infrastructure for RFP Agent
+
+This directory contains the Terraform configuration and Cloud Build setup for the RFP Agent.
+
+## Terraform Provisioning
+
+The Terraform code provisions:
+1. **Dedicated Service Account**: `rfp-agent-sa` with least privilege access (Vertex AI, Cloud DLP).
+2. **Artifact Registry Repository**: For storing Docker images of the agent.
+3. **Secret Manager Secret**: For sensitive API keys like `GOOGLE_DEVELOPER_DOCS_API_KEY`.
+4. **Cloud Build Trigger**: Automatically builds and deploys the agent on every push to the `main` branch of the GitHub repository.
+
+### Initial Setup
+
+1. Initialize Terraform:
+   ```bash
+   cd terraform
+   terraform init
+   ```
+
+2. Plan and apply the configuration:
+   ```bash
+   terraform apply -var="project_id=YOUR_PROJECT_ID"
+   ```
+
+## CI/CD with Cloud Build
+
+The `cloudbuild.yaml` file in the root directory manages the build and deployment pipeline:
+1. **Build**: Builds the Docker image from `ai/services/rfp-agent/`.
+2. **Push**: Pushes the image to the Artifact Registry repository created by Terraform.
+3. **Deploy**: Deploys the new image to Cloud Run in the specified region.
+
+The trigger is configured to run on every push to the `main` branch of the GitHub repository. Ensure the Cloud Build service account has the necessary permissions to deploy to Cloud Run and access Artifact Registry.
+
+
+
