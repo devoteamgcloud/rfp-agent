@@ -146,39 +146,64 @@ Assign the appropriate role and click **Save**. The agent is now authorized and 
 ---
 
 ## Bill of Materials
-# Infrastructure for RFP Agent
+This project provides a comprehensive overview of the software dependencies and infrastructure components that constitute the **DGC Internal RFP Agent** project.
 
-This directory contains the Terraform configuration and Cloud Build setup for the RFP Agent.
+ ### 📦 Software Components
 
-## Terraform Provisioning
+ The project is structured as a multi-service application with two primary Python-based services.
 
-The Terraform code provisions:
-1. **Dedicated Service Account**: `rfp-agent-sa` with least privilege access (Vertex AI, Cloud DLP).
-2. **Artifact Registry Repository**: For storing Docker images of the agent.
-3. **Secret Manager Secret**: For sensitive API keys like `GOOGLE_DEVELOPER_DOCS_API_KEY`.
-4. **Cloud Build Trigger**: Automatically builds and deploys the agent on every push to the `main` branch of the GitHub repository.
+ #### 1. RFP Agent Service (`ai/services/rfp-agent`)
+ *Core engine for RFP analysis and agentic workflows.*
 
-### Initial Setup
+ | Dependency | Purpose |
+ | :--- | :--- |
+ | `google-adk[a2a,bigquery]` | Google Agent Development Kit with A2A and BigQuery support |
+ | `google-cloud-aiplatform` | Vertex AI SDK for Gemini and Agent Engines |
+ | `a2a-sdk` | Agent-to-Agent communication |
+ | `fastapi` / `uvicorn` | API framework and ASGI server |
+ | `pydantic` | Data validation and settings management |
+ | `structlog` | Structured logging for observability |
+ | `opentelemetry-api` | Distributed tracing and telemetry |
+ | `auth0-python` / `python-jose` | Authentication and JWT handling |
+ | `httpx` | Asynchronous HTTP client |
 
-1. Initialize Terraform:
-   ```bash
-   cd terraform
-   terraform init
-   ```
+ #### 2. DCR Service (`ai/services/dcr`)
+ *Service for Data Clean Room (DCR) operations and state management.*
 
-2. Plan and apply the configuration:
-   ```bash
-   terraform apply -var="project_id=YOUR_PROJECT_ID"
-   ```
+ | Dependency | Purpose |
+ | :--- | :--- |
+ | `google-cloud-firestore` | NoSQL database for session and state persistence |
+ | `google-cloud-pubsub` | Asynchronous messaging and event handling |
+ | `google-cloud-iam` | Programmatic IAM management |
+ | `google-auth` | GCP authentication and credential handling |
+ | `fastapi` | Lightweight API interface |
+ | `cryptography` | Secure data handling and encryption |
 
-## CI/CD with Cloud Build
+ ---
 
-The `cloudbuild.yaml` file in the root directory manages the build and deployment pipeline:
-1. **Build**: Builds the Docker image from `ai/services/rfp-agent/`.
-2. **Push**: Pushes the image to the Artifact Registry repository created by Terraform.
-3. **Deploy**: Deploys the new image to Cloud Run in the specified region.
+ ### ☁️ Infrastructure Components (GCP)
 
-The trigger is configured to run on every push to the `main` branch of the GitHub repository. Ensure the Cloud Build service account has the necessary permissions to deploy to Cloud Run and access Artifact Registry.
+ The infrastructure is managed via Terraform and deployed to Google Cloud Platform.
+
+ | Component | Resource Type / Module | Description |
+ | :--- | :--- | :--- |
+ | **Compute** | Cloud Run | Serverless execution for the RFP Agent and DCR services. |
+ | **Database** | Firestore | State persistence for DCR and session management. |
+ | **Messaging** | Pub/Sub | Event-driven architecture for service communication. |
+ | **Storage** | Cloud Storage | Buckets for document storage and RAG knowledge bases. |
+ | **Security** | Secret Manager | Secure storage for API keys, Auth0 secrets, and credentials. |
+ | **IAM** | Service Accounts | Dedicated identities for services following least-privilege. |
+ | **CI/CD** | Cloud Build | Automated build and deployment pipelines. |
+ | **Registry** | Artifact Registry | Container image storage for Cloud Run services. |
+ | **Governance** | Cloud Resource Manager | API enablement and project-level configurations. |
+
+ ---
+
+ ### 🛠️ Development & Tooling
+ *   **Package Manager:** `uv` (for fast, reproducible Python environments).
+ *   **Infrastructure Manager:** Terraform (v1.0+).
+ *   **Containerization:** Docker (multi-stage builds for slim images).
+ *   **Linting/Formatting:** `ruff` (respecting Google Python Style Guide).
 
 
 
